@@ -166,18 +166,40 @@ class SocialSharePlugin:FlutterPlugin, MethodCallHandler, ActivityAware {
             result.success("success")
         } 
         else if (call.method == "shareWhatsapp") {
-            //shares content on WhatsApp
+            // Retrieves the content and image arguments
             val content: String? = call.argument("content")
+            val imagePath: String? = call.argument("imagePath")
+        
+            // Create the WhatsApp share intent
             val whatsappIntent = Intent(Intent.ACTION_SEND)
-            whatsappIntent.type = "text/plain"
-            whatsappIntent.setPackage("com.whatsapp")
+            if (imagePath != null) {
+                // If image path is provided, share both image and text
+                val imageFile = File(activeContext!!.cacheDir, imagePath)
+                val imageUri = FileProvider.getUriForFile(
+                    activeContext!!,
+                    activeContext!!.applicationContext.packageName + ".com.shekarmudaliyar.social_share",
+                    imageFile
+                )
+                whatsappIntent.type = "image/*"
+                whatsappIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
+                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } else {
+                // If no image path, share only text
+                whatsappIntent.type = "text/plain"
+            }
+        
+            // Add the text content to the intent
             whatsappIntent.putExtra(Intent.EXTRA_TEXT, content)
+            whatsappIntent.setPackage("com.whatsapp")
+        
+            // Try to launch the WhatsApp intent
             try {
                 activity!!.startActivity(whatsappIntent)
                 result.success("success")
             } catch (ex: ActivityNotFoundException) {
-                result.success("error")
+                result.success("error: WhatsApp not installed")
             }
+        
         } else if (call.method == "shareSms") {
             //shares content on sms
             val content: String? = call.argument("message")
