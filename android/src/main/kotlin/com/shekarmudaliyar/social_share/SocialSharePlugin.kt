@@ -199,7 +199,6 @@ class SocialSharePlugin:FlutterPlugin, MethodCallHandler, ActivityAware {
             } catch (ex: ActivityNotFoundException) {
                 result.success("error: WhatsApp not installed")
             }
-        
         } else if (call.method == "shareSms") {
             //shares content on sms
             val content: String? = call.argument("message")

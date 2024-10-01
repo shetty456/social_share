@@ -177,8 +177,11 @@ class SocialShare {
     return version;
   }
 
-  static Future<String?> shareWhatsapp(
-      {required String content, String? imagePath,}) async {
+  static Future<String?> shareWhatsapp({
+    required String content,
+    String? imagePath,
+  }) async {
+     Map<String, dynamic> args;
     String? _imagePath = imagePath;
 
     // Handle image saving if on Android
@@ -188,10 +191,9 @@ class SocialShare {
       _imagePath = stickerFilename; // Update the imagePath to the temporary one
     }
 
-    final Map<String, dynamic> args = <String, dynamic>{
+    args = <String, dynamic>{
       "content": content,
-      if (_imagePath != null)
-        "imagePath": _imagePath, // Include image path if not null
+      "imagePath": _imagePath, 
     };
 
     final String? version = await _channel.invokeMethod('shareWhatsapp', args);
